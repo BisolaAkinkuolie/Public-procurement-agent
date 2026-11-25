@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Public Procurement Agent</title>
+<style>
+  :root { --ink:#1d2430; --muted:#5b6575; --line:#dfe3ea; --accent:#b4232a; --ok:#1f7a4d; --warn:#9a5b00; }
+  * { box-sizing: border-box; }
+  body { margin:0; font:15px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; color:var(--ink); background:#f6f7f9; }
+  main { max-width: 820px; margin: 0 auto; padding: 32px 20px 80px; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  .sub { color: var(--muted); margin: 0 0 24px; }
+  form { display:flex; gap:8px; }
+  input { flex:1; padding:12px 14px; border:1px solid var(--line); border-radius:8px; font:inherit; background:#fff; }
+  button { padding:12px 18px; border:0; border-radius:8px; background:var(--accent); color:#fff; font:inherit; cursor:pointer; }
+  button:disabled { opacity:.6; cursor:wait; }
+  .examples { margin:12px 0 28px; display:flex; flex-wrap:wrap; gap:8px; }
+  .examples button { background:#fff; color:var(--ink); border:1px solid var(--line); padding:6px 10px; font-size:13px; }
+  .card { background:#fff; border:1px solid var(--line); border-radius:10px; padding:18px 20px; margin-bottom:16px; }
+  .q { font-weight:600; margin-bottom:8px; }
+  .answer { white-space: pre-wrap; }
+  .badge { display:inline-block; font-size:12px; padding:2px 8px; border-radius:999px; margin-top:12px; }
+  .ok { background:#e3f4ea; color:var(--ok); } .warn { background:#fff1dc; color:var(--warn); }
+  details { margin-top:10px; color:var(--muted); font-size:13px; }
+  code { font-size:12px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Public Procurement Agent</h1>
+  <p class="sub">Ask about federal contracts over $10,000 or procurement policy. Answers use governed, read-only data tools and cite their sources.</p>
+  <form id="f"><input id="q" placeholder="e.g. Who were the top IT services vendors in 2024?" autocomplete="off"><button id="go">Ask</button></form>
+  <div class="examples">
+    <button data-q="Which vendors received the most services contracts by value since 2023?">Top services vendors</button>
+    <button data-q="What share of contract value was awarded non-competitively, and when does policy allow that?">Non-competitive share + policy</button>
+    <button data-q="Give me a profile of Aurora Data Systems.">Vendor profile</button>
+  </div>
+  <div id="out"></div>
+</main>
+<script>
+  const f = document.getElementById('f'), q = document.getElementById('q'), go = document.getElementById('go'), out = document.getElementById('out');
+  document.querySelectorAll('.examples button').forEach(b => b.onclick = e => { e.preventDefault(); q.value = b.dataset.q; f.requestSubmit(); });
+  const esc = s => s.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+  f.onsubmit = async e => {
+    e.preventDefault();
+    const question = q.value.trim(); if (!question) return;
+    go.disabled = true;
+    const card = document.createElement('div'); card.className = 'card';
+    card.innerHTML = `<div class="q">${esc(question)}</div><div class="answer">Thinking…</div>`;
+    out.prepend(card);
+    try {
+      const r = await fetch('/chat', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({question})});
+      const d = await r.json();
+      if (!r.ok) throw new Error(d.detail || r.statusText);
+      const g = d.grounding;
+      card.querySelector('.answer').textContent = d.answer;
+      card.insertAdjacentHTML('beforeend',
+        `<span class="badge ${g.ok ? 'ok' : 'warn'}">${g.ok ? `All ${g.checked.length} figures matched tool results` : `Unverified: ${esc(g.ungrounded.join(', '))}`}</span>
+         <details><summary>${d.tool_trace.length} tool call(s)</summary>${d.tool_trace.map(t => `<div><code>${esc(t.tool)}(${esc(JSON.stringify(t.arguments))})</code> · ${t.ms} ms</div>`).join('')}</details>`);
+    } catch (err) { card.querySelector('.answer').textContent = 'Error: ' + err.message; }
+    go.disabled = false;
+  };
+</script>
+</body>
+</html>

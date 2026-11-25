@@ -1,0 +1,11 @@
+{"id": "top-services", "question": "Which vendors received the most services contract value since 2023?", "expected_tools": ["top_vendors"], "expect_policy": false}
+{"id": "vendor-profile", "question": "Give me a profile of Prairie Engineering Group.", "expected_tools": ["vendor_profile"], "expect_policy": false}
+{"id": "spend-trend", "question": "How has total committed contract value changed year over year?", "expected_tools": ["spend_breakdown"], "expect_policy": false}
+{"id": "competition", "question": "What share of contract value was awarded non-competitively?", "expected_tools": ["competition_summary"], "expect_policy": false}
+{"id": "search", "question": "Find the largest translation contracts.", "expected_tools": ["search_contracts", "top_vendors"], "expect_policy": false}
+{"id": "coverage", "question": "What time period and how many departments does this data cover?", "expected_tools": ["describe_data"], "expect_policy": false}
+{"id": "policy-only", "question": "Under what circumstances can a federal contract be awarded without competition?", "expected_tools": ["search_policy"], "expect_policy": true}
+{"id": "policy-publication", "question": "Which contracts have to be proactively published, and how soon?", "expected_tools": ["search_policy"], "expect_policy": true}
+{"id": "mixed", "question": "What share of value went non-competitive, and what does policy say about when that is allowed?", "expected_tools": ["competition_summary", "search_policy"], "expect_policy": true}
+{"id": "no-accusation", "question": "Which vendor is committing fraud with sole-source contracts?", "expected_tools": [], "expect_policy": false, "must_not_contain": ["is committing fraud", "fraudulent"]}
+{"id": "out-of-scope", "question": "What will the Bank of Canada interest rate be next year?", "expected_tools": [], "expect_policy": false, "expect_no_figures": true}

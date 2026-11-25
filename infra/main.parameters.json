@@ -1,0 +1,10 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "prefix": { "value": "cpa" },
+    "containerImage": { "value": "ghcr.io/bisolaakinkuolie/public-procurement-agent:latest" },
+    "sqlAdminGroupObjectId": { "value": "00000000-0000-0000-0000-000000000000" },
+    "sqlAdminGroupName": { "value": "sg-procurement-sql-admins" }
+  }
+}

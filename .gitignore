@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+.pytest_cache/
+.ruff_cache/
+dist/
+build/
+
+# Generated data: the real dataset, fetched policy pages, the vector index, local databases
+data/raw/
+data/docs/
+data/index/
+data/*.db
+evals/results/
